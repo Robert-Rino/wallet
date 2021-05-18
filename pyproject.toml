@@ -8,6 +8,11 @@ authors = ["ninochang <nino.chang@swag.live>"]
 python = "^3.8"
 fastapi = "^0.63.0"
 uvicorn = "^0.13.4"
+sqlalchemy = "^1.4.12"
+psycopg2-binary = "^2.8.6"
+python-multipart = "^0.0.5"
+python-jose = "^3.2.0"
+passlib = "^1.7.4"
 
 [tool.poetry.dev-dependencies]
 

@@ -2,7 +2,6 @@ version: '3.8'
 
 x-environment: &environment
   PYTHONOPTIMIZE: "1"
-  MONGO_URL: mongodb://mongos:27018/swag?appname=swag&readPreference=secondaryPreferred&connect=false&connectTimeoutMS=1000&compressors=zstd
   CELERY_BROKER_WRITE_URL: redis://broker-master:6380/0
   CELERY_BROKER_READ_URL: redis://broker-slave:6381/0
   CELERY_RESULT_BACKEND: redis://results:6382/0
@@ -10,14 +9,13 @@ x-environment: &environment
   CACHE_REDIS_URL: redis://cache:6379/0?max_connections=20&timeout=5
   RATELIMIT_STORAGE_URL: redis://cache:6379/3?max_connections=1&timeout=5
   INTERNAL_SERVER_NAME: swag-api.default.svc.cluster.local
-  PUSHER_CHANNELS_API_ENDPOINT: http://pusher:3000
   MONGODB_EVENT_LISTENERS: swag.utils.loggers.CommandLogger
 
 networks:
   default:
     driver: bridge
-# volumes:
-#   postgres:
+volumes:
+  postgres:
 services:
   # frontend:
   #   image: openresty/openresty:alpine
@@ -33,7 +31,7 @@ services:
   #   networks:
   #   - default
   web:
-    command: uvicorn main:app --reload --host 0.0.0.0
+    command: uvicorn sql_app.main:app --reload --host 0.0.0.0
     build:
       context: .
     env_file: .env
@@ -46,20 +44,22 @@ services:
     - "8000:8000"
     networks:
     - default
-  # postgres:
-  #   image: postgres
-  #   ports:
-  #   - "5432:5432"
-  #   volumes:
-  #     - postgres:/data/db
-  #   environment:
-  #     POSTGRES_USER: example
-  #     POSTGRES_PASSWORD: example
-  #     POSTGRES_DB: example
-  #   networks:
-  #     - default
-  # adminer:
-  #   image: adminer
-  #   restart: always
-  #   ports:
-  #     - "8080:8080"
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres
+    ports:
+    - "5432:5432"
+    volumes:
+      - postgres:/data/db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
+    networks:
+      - default
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
