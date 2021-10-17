@@ -109,24 +109,25 @@ async def get_current_user(
         raise credentials_exception
     return user
 
-async def get_current_active_user(current_user: schemas.User = Depends(get_current_user)):
-    if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
+@app.get("/me", response_model=schemas.User)
+async def read_me(current_user: schemas.User = Depends(get_current_user)):
     return current_user
 
-@app.get("/me", response_model=schemas.User)
-async def read_me(active_current_user: schemas.User = Depends(get_current_active_user)):
-    return active_current_user
+@app.post("/items", response_model=schemas.Item)
+def create_item_for_user(
+    item: schemas.ItemCreate,
+    current_user: schemas.User= Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return crud.create_user_item(db=db, item=item, user_id=current_user.id)
 
 
-# @app.post("/users/{user_id}/items/", response_model=schemas.Item)
-# def create_item_for_user(
-#     user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
-# ):
-#     return crud.create_user_item(db=db, item=item, user_id=user_id)
-
-
-# @app.get("/items/", response_model=List[schemas.Item])
-# def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-#     items = crud.get_items(db, skip=skip, limit=limit)
-#     return items
+@app.get("/items", response_model=List[schemas.Item])
+def read_items(
+        skip: int = 0, 
+        limit: int = 100, 
+        current_user: schemas.User= Depends(get_current_user),
+        db: Session = Depends(get_db)
+):
+    items = crud.get_user_items(db, user_id=current_user.id, skip=skip, limit=limit)
+    return items
