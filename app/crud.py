@@ -4,9 +4,12 @@ from . import models, schemas
 from .database import SessionLocal
 
 
-def get_user(user_id: int, db: Session=SessionLocal()):
+def get_user(email: str, hashed_password: str, db: Session=SessionLocal()):
+    return db.query(models.User).filter(
+        models.User.hashed_password == hashed_password,
+        models.User.email == email
+    ).first()
 
-    return db.query(models.User).filter(models.User.id == user_id).first()
 
 
 def get_user_by_email(email: str, db: Session=SessionLocal()):
