@@ -31,7 +31,7 @@ services:
   #   networks:
   #   - default
   web:
-    command: uvicorn sql_app.main:app --reload --host 0.0.0.0
+    command: uvicorn app.main:app --reload --host 0.0.0.0
     build:
       context: .
     env_file: .env
@@ -47,7 +47,7 @@ services:
     depends_on:
       - postgres
   postgres:
-    image: postgres
+    image: postgres:14-alpine
     ports:
     - "5432:5432"
     volumes:
@@ -58,8 +58,8 @@ services:
       POSTGRES_DB: db
     networks:
       - default
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - "8080:8080"
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - "8080:8080"
