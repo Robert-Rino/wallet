@@ -2,9 +2,8 @@ from fastapi import Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 
+from .config import settings
 from . import crud
-
-SECRET_KEY = 'secret'
 
 async def get_current_user(
     token: str = Depends(OAuth2PasswordBearer(tokenUrl='/login'))
@@ -15,7 +14,7 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        payload = jwt.decode(token, settings.secret_key, algorithms=['HS256'])
         if not (email := payload.get("sub")):
             raise credentials_exception
     except JWTError:

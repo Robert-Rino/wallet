@@ -5,10 +5,9 @@ from jose import jwt
 from pydantic import BaseModel
 
 from .. import schemas, crud, models, depends
+from ..config import settings
 
 router = APIRouter()
-SECRET_KEY = 'secret'
-
 
 class LoginInfo(BaseModel):
     email: str
@@ -83,7 +82,7 @@ def login(
             'sub': user.email,
             'exp': now + datetime.timedelta(hours=1)
             }, 
-            SECRET_KEY, 
+            settings.secret_key, 
             algorithm='HS256',
         )
         return {

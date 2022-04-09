@@ -7,6 +7,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from .routes import users
+from .config import settings
 
 from . import crud, models, schemas
 # from .database import SessionLocal, engine
@@ -20,10 +21,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgres/db"
-
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL
+    settings.sqlalchemy_data_url
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
