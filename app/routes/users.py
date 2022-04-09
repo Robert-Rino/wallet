@@ -48,19 +48,6 @@ def protected_user(
         'email': user.email
     }
 
-# @router.get("/users/", response_model=List[schemas.User])
-# def read_users(skip: int = 0, limit: int = 100):
-#     users = crud.get_users(skip=skip, limit=limit)
-#     return users
-
-
-# @router.get("/users/{user_id}", response_model=schemas.User)
-# def read_user(user_id: int):
-#     db_user = crud.get_user(user_id=user_id)
-#     if db_user is None:
-#         raise HTTPException(status_code=404, detail="User not found")
-#     return db_user
-
 
 @router.post('/login')
 async def login(
