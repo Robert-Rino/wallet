@@ -41,7 +41,7 @@ def create_user(
 
 @router.get("/user_p", status_code=200)
 def protected_user(
-    user = Depends(depends.get_current_user),
+    user = Depends(depends.authenticate),
 ):
     return {
         'email': user.email

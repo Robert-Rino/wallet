@@ -5,7 +5,7 @@ from jose import jwt, JWTError
 from .config import settings
 from . import crud
 
-async def get_current_user(
+async def authenticate(
     token: str = Depends(OAuth2PasswordBearer(tokenUrl='/login'))
 ):
     credentials_exception = HTTPException(
