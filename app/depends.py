@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 
 from .config import settings
-from . import crud
+from . import database, models
 
 async def authenticate(
     token: str = Depends(OAuth2PasswordBearer(tokenUrl='/login'))
@@ -20,6 +20,12 @@ async def authenticate(
     except JWTError:
         raise credentials_exception
     
-    if not (user := crud.get_user_by_email(email=email)):
-        raise credentials_exception
+    with database.SessionLocal() as session:
+        if not (user := session.query(
+            models.User
+        ).filter(
+            models.User.email == email
+        ).first()):
+            raise credentials_exception
+
     return user
