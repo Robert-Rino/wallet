@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from .. import schemas, crud, models, depends
 from ..config import settings
+from app import exceptions
 
 router = APIRouter()
 
@@ -62,7 +63,7 @@ def protected_user(
 
 
 @router.post('/login')
-def login(
+async def login(
     response: Response,
     username: str=Form(None),
     password: str=Form(None),
@@ -71,24 +72,23 @@ def login(
     email = username
 
     hashed_password = models.User.hash_password(password)
-    if (user := crud.get_user(
+    if not (user := crud.get_user(
         email=email,
         hashed_password=hashed_password,
     )):
-        now = datetime.datetime.utcnow()
-        response.status_code = 200
-        token = jwt.encode(
-            {
+        raise exceptions.Unauthorized()
+
+    now = datetime.datetime.utcnow()
+    response.status_code = 200
+    token = jwt.encode(
+        {
             'sub': user.email,
             'exp': now + datetime.timedelta(hours=1)
-            }, 
-            settings.secret_key, 
-            algorithm='HS256',
-        )
-        return {
-            'access_token': token,
-            'token_type': 'bearer'
-        }
-    
-    response.status_code = 401
-    return 
+        }, 
+        settings.secret_key, 
+        algorithm='HS256',
+    )
+    return {
+        'access_token': token,
+        'token_type': 'bearer'
+    }

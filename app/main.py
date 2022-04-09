@@ -1,23 +1,22 @@
+from app.exceptions import Unauthorized
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
 from typing import List, Optional
-from .routes import users
-from . import create_app
+# from .routes import users
+from . import routes, create_app
 
 app = create_app()
-app.include_router(users.router)
+app.include_router(routes.router)
+app.include_router(routes.users.router)
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
 
-# def create_access_token(data: dict, expires_delta: Optional[datetime.timedelta] = None):
-#     to_encode = data.copy()
-#     if expires_delta:
-#         expire = datetime.datetime.utcnow() + expires_delta
-#     else:
-#         expire = datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
-#     to_encode.update({"exp": expire})
-#     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-#     return encoded_jwt
+@app.exception_handler(Unauthorized)
+async def unauthorized(request: Request, exc: Unauthorized):
+    return JSONResponse(
+        status_code=401,
+        content={'code': exc.code},
+    )
 
 
 # @app.post("/users/", response_model=schemas.User)
