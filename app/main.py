@@ -1,42 +1,8 @@
-import datetime
-
 from typing import List, Optional
-
-from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import JWTError, jwt
-from sqlalchemy.orm import Session
 from .routes import users
-from .config import settings
+from . import create_app
 
-from . import crud, models, schemas
-# from .database import SessionLocal, engine
-
-# init db
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-
-engine = create_engine(
-    settings.sqlalchemy_data_url
-)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
-
-# get db session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-models.Base.metadata.create_all(bind=engine)
-app = FastAPI(
-    dependencies=[Depends(get_db)],
-)
-
+app = create_app()
 app.include_router(users.router)
 
 @app.get("/")
