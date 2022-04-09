@@ -40,7 +40,7 @@ def create_user(
         response.status_code = status.HTTP_404_NOT_FOUND
     return 
 
-@router.get("/user_p", status_code=200)
+@router.get("/me", status_code=200)
 def protected_user(
     user = Depends(depends.authenticate),
 ):
