@@ -4,15 +4,11 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status, Form
 from jose import jwt
 from pydantic import BaseModel
 
-from .. import schemas, crud, models, depends
+from .. import crud, models, depends
 from ..config import settings
 from app import exceptions
 
 router = APIRouter()
-
-class LoginInfo(BaseModel):
-    email: str
-    password: str
 
 @router.post("/user", status_code=201)
 def create_user(

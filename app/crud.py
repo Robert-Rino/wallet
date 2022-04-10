@@ -11,7 +11,6 @@ def get_user(email: str, hashed_password: str, db: Session=SessionLocal()):
     ).first()
 
 
-
 def get_user_by_email(email: str, db: Session=SessionLocal()):
 
     return db.query(models.User).filter(models.User.email == email).first()
@@ -27,6 +26,7 @@ def create_user(email: str, password: str, db: Session=SessionLocal()):
     db.commit()
     db.refresh(db_user)
     return db_user
+
 
 def delete_user(email: str, db: Session=SessionLocal()):
     if (db_user := db.query(models.User).filter(models.User.email == email).first()):
