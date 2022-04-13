@@ -18,14 +18,17 @@ def get_user_by_email(email: str, db: Session=SessionLocal()):
 
 def create_user(email: str, password: str, db: Session=SessionLocal()):
     # fake_hashed_password = user.password + "notreallyhashed"
-    db_user = models.User(
+    wallet = models.Wallet()
+    user = models.User(
         email=email,
-        hashed_password=models.User.hash_password(password)
+        hashed_password=models.User.hash_password(password),
+        wallet=wallet,
     )
-    db.add(db_user)
+    db.add(wallet)
+    db.add(user)
     db.commit()
-    db.refresh(db_user)
-    return db_user
+    db.refresh(user)
+    return user
 
 
 def delete_user(email: str, db: Session=SessionLocal()):
